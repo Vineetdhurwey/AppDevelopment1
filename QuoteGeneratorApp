@@ -1,0 +1,73 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.datatransfer.StringSelection;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.util.Random;
+
+public class QuoteGenerator {
+    private static final String[] quotes = {
+        "The only way to do great work is to love what you do. - Steve Jobs",
+        "In the middle of every difficulty lies opportunity. - Albert Einstein",
+        "Do what you can, with what you have, where you are. - Theodore Roosevelt",
+        "It always seems impossible until it’s done. - Nelson Mandela",
+        "Success is not final, failure is not fatal: it is the courage to continue that counts. - Winston Churchill"
+    };
+
+    public static void main(String[] args) {
+        // Create the frame
+        JFrame frame = new JFrame("Random Quote Generator");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(500, 300);
+        frame.setLayout(new BorderLayout());
+
+        // Label to display quotes
+        JLabel quoteLabel = new JLabel("<html><center>Click 'New Quote' to begin</center></html>", SwingConstants.CENTER);
+        quoteLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        quoteLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Button to generate a new quote
+        JButton newQuoteButton = new JButton("New Quote");
+        newQuoteButton.setFont(new Font("Arial", Font.BOLD, 14));
+
+        // Button to copy the quote
+        JButton copyButton = new JButton("Copy to Clipboard");
+        copyButton.setFont(new Font("Arial", Font.BOLD, 14));
+
+        // Panel for buttons
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(newQuoteButton);
+        buttonPanel.add(copyButton);
+
+        // Add components to frame
+        frame.add(quoteLabel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Add action listener to button
+        newQuoteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Random rand = new Random();
+                String randomQuote = quotes[rand.nextInt(quotes.length)];
+                quoteLabel.setText("<html><center>" + randomQuote + "</center></html>");
+            }
+        });
+
+        // Copy to clipboard functionality
+        copyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String quoteText = quoteLabel.getText().replaceAll("<.*?>", ""); // Remove HTML tags
+                StringSelection selection = new StringSelection(quoteText);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, null);
+                JOptionPane.showMessageDialog(frame, "Quote copied to clipboard!");
+            }
+        });
+
+        // Display the frame
+        frame.setVisible(true);
+    }
+}
