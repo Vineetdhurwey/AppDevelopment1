@@ -1,0 +1,154 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class FlashcardQuizApp {
+    private JFrame frame;
+    private JPanel panel;
+    private JTextField questionField, answerField, userAnswerField;
+    private JLabel questionLabel, scoreLabel;
+    private JButton addButton, startQuizButton, submitAnswerButton, nextButton;
+    private ArrayList<Flashcard> flashcards;
+    private int currentIndex, score;
+
+    public FlashcardQuizApp() {
+        flashcards = new ArrayList<>();
+
+        frame = new JFrame("Flashcard Quiz");
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 1));
+
+        // Adding Flashcards Section
+        questionField = new JTextField();
+        answerField = new JTextField();
+        addButton = new JButton("Add Flashcard");
+
+        panel.add(new JLabel("Enter Question:"));
+        panel.add(questionField);
+        panel.add(new JLabel("Enter Answer:"));
+        panel.add(answerField);
+        panel.add(addButton);
+
+        // Start Quiz Button
+        startQuizButton = new JButton("Start Quiz");
+        panel.add(startQuizButton);
+
+        // Quiz Section (Initially Hidden)
+        questionLabel = new JLabel("", SwingConstants.CENTER);
+        userAnswerField = new JTextField();
+        submitAnswerButton = new JButton("Submit Answer");
+        nextButton = new JButton("Next");
+        scoreLabel = new JLabel("", SwingConstants.CENTER);
+
+        questionLabel.setVisible(false);
+        userAnswerField.setVisible(false);
+        submitAnswerButton.setVisible(false);
+        nextButton.setVisible(false);
+        scoreLabel.setVisible(false);
+
+        panel.add(questionLabel);
+        panel.add(userAnswerField);
+        panel.add(submitAnswerButton);
+        panel.add(nextButton);
+        panel.add(scoreLabel);
+
+        // Add Event Listeners
+        addButton.addActionListener(e -> addFlashcard());
+        startQuizButton.addActionListener(e -> startQuiz());
+        submitAnswerButton.addActionListener(e -> checkAnswer());
+        nextButton.addActionListener(e -> nextQuestion());
+
+        frame.add(panel);
+        frame.setSize(400, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
+    private void addFlashcard() {
+        String question = questionField.getText().trim();
+        String answer = answerField.getText().trim();
+        if (!question.isEmpty() && !answer.isEmpty()) {
+            flashcards.add(new Flashcard(question, answer));
+            questionField.setText("");
+            answerField.setText("");
+            JOptionPane.showMessageDialog(frame, "Flashcard Added!");
+        }
+    }
+
+    private void startQuiz() {
+        if (flashcards.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "No flashcards available. Add some first!");
+            return;
+        }
+        currentIndex = 0;
+        score = 0;
+        Collections.shuffle(flashcards);
+        showQuestion();
+    }
+
+    private void showQuestion() {
+        if (currentIndex < flashcards.size()) {
+            questionLabel.setText("Q: " + flashcards.get(currentIndex).getQuestion());
+            questionLabel.setVisible(true);
+            userAnswerField.setText("");
+            userAnswerField.setVisible(true);
+            submitAnswerButton.setVisible(true);
+            nextButton.setVisible(false);
+            scoreLabel.setVisible(false);
+        } else {
+            questionLabel.setText("Quiz Complete!");
+            questionLabel.setVisible(true);
+            userAnswerField.setVisible(false);
+            submitAnswerButton.setVisible(false);
+            nextButton.setVisible(false);
+            scoreLabel.setText("Final Score: " + score + " / " + flashcards.size());
+            scoreLabel.setVisible(true);
+        }
+    }
+
+    private void checkAnswer() {
+        String userAnswer = userAnswerField.getText().trim().toLowerCase();
+        String correctAnswer = flashcards.get(currentIndex).getAnswer().trim().toLowerCase();
+
+        if (userAnswer.equals(correctAnswer)) {
+            score++;
+            JOptionPane.showMessageDialog(frame, "Correct!");
+        } else {
+            JOptionPane.showMessageDialog(frame, "Wrong! Correct answer: " + flashcards.get(currentIndex).getAnswer());
+        }
+
+        submitAnswerButton.setVisible(false);
+        nextButton.setVisible(true);
+    }
+
+    private void nextQuestion() {
+        currentIndex++;
+        showQuestion();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(FlashcardQuizApp::new);
+    }
+}
+
+// Flashcard Class
+class Flashcard {
+    private String question;
+    private String answer;
+
+    public Flashcard(String question, String answer) {
+        this.question = question;
+        this.answer = answer;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+}
+
