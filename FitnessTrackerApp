@@ -1,0 +1,105 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
+
+class FitnessTracker {
+    private String userName;
+    private int steps;
+    private double distanceKm; // distance in kilometers
+    private double caloriesBurned;
+    private LocalDateTime dateTime;
+
+    // Constructor
+    public FitnessTracker(String userName) {
+        this.userName = userName;
+        this.steps = 0;
+        this.distanceKm = 0.0;
+        this.caloriesBurned = 0.0;
+        this.dateTime = LocalDateTime.now();
+    }
+
+    // Method to add steps and calculate related metrics
+    public void addSteps(int newSteps) {
+        this.steps += newSteps;
+        // Average stride length: 0.000762 km (0.762 meters)
+        this.distanceKm = this.steps * 0.000762;
+        // Rough calorie calculation: 0.05 calories per step
+        this.caloriesBurned = this.steps * 0.05;
+    }
+
+    // Getters
+    public String getUserName() {
+        return userName;
+    }
+
+    public int getSteps() {
+        return steps;
+    }
+
+    public double getDistanceKm() {
+        return distanceKm;
+    }
+
+    public double getCaloriesBurned() {
+        return caloriesBurned;
+    }
+
+    // Display fitness stats
+    public void displayStats() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        System.out.println("\n=== Fitness Tracker Stats ===");
+        System.out.println("User: " + userName);
+        System.out.println("Date: " + dateTime.format(formatter));
+        System.out.println("Steps: " + steps);
+        System.out.printf("Distance: %.2f km%n", distanceKm);
+        System.out.printf("Calories burned: %.1f cal%n", caloriesBurned);
+    }
+}
+
+public class FitnessTrackerApp {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Get user name
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        
+        // Create fitness tracker instance
+        FitnessTracker tracker = new FitnessTracker(name);
+        
+        boolean running = true;
+        while (running) {
+            System.out.println("\nFitness Tracker Menu:");
+            System.out.println("1. Add steps");
+            System.out.println("2. Show stats");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option (1-3): ");
+            
+            int choice = scanner.nextInt();
+            
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter number of steps: ");
+                    int steps = scanner.nextInt();
+                    tracker.addSteps(steps);
+                    System.out.println("Steps added successfully!");
+                    break;
+                    
+                case 2:
+                    tracker.displayStats();
+                    break;
+                    
+                case 3:
+                    running = false;
+                    System.out.println("Thank you for using Fitness Tracker!");
+                    break;
+                    
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+
+        // Close scanner
+        scanner.close();
+    }
+}
